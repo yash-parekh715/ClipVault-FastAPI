@@ -1,0 +1,179 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Cl1p.net Clone</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f2f2f2;
+            margin: 0;
+            padding: 0;
+            text-align: center;
+        }
+
+        h1 {
+            background-color: #007BFF;
+            color: #fff;
+            padding: 20px;
+        }
+
+        form {
+            background-color: #fff;
+            border: 1px solid #ccc;
+            padding: 20px;
+            margin: 20px;
+            border-radius: 5px;
+        }
+
+        label {
+            display: block;
+            font-weight: bold;
+        }
+
+        input[type="text"],
+        textarea {
+            width: 100%;
+            padding: 10px;
+            margin: 8px 0;
+            box-sizing: border-box;
+            border: 1px solid #ccc;
+            border-radius: 3px;
+        }
+
+        button {
+            background-color: #007BFF;
+            color: #fff;
+            padding: 10px 20px;
+            border: none;
+            cursor: pointer;
+            border-radius: 3px;
+        }
+
+        #display-clip {
+            margin: 20px;
+            padding: 10px;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+            background-color: #fff;
+        }
+    </style>
+</head>
+<body>
+    <h1>Cl1p.net Clone</h1>
+
+    <!-- Create Clip Form -->
+    <form id="create-clip-form">
+        <label for="clip_id">Clip ID:</label>
+        <input type="text" id="clip_id" required>
+        <br>
+        <label for="clip_data">Clip Data:</label>
+        <textarea id="clip_data" required></textarea>
+        <br>
+        <button type="submit">Create Clip</button>
+    </form>
+
+    <!-- Delete Clip Form -->
+    <form id="delete-clip-form">
+        <label for="delete_clip_id">Delete Clip (Enter ID):</label>
+        <input type="text" id="delete_clip_id" required>
+        <br>
+        <button type="submit">Delete Clip</button>
+    </form>
+
+    <!-- Show Clip Form -->
+    <form id="show-clip-form">
+        <label for="show_clip_id">Show Clip (Enter ID):</label>
+        <input type="text" id="show_clip_id" required>
+        <button type="submit">Show Clip</button>
+    </form>
+
+    <div id="display-clip">
+        <!-- Display Clip Data Here -->
+    </div>
+
+
+    <script>
+        // Function to create a clip
+        async function createClip() {
+            const clipId = document.getElementById("clip_id").value;
+            const clipData = document.getElementById("clip_data").value;
+
+            try {
+                const response = await fetch('http://127.0.0.1:8000/clip', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({ id: clipId, data: clipData })
+                });
+
+                if (response.status === 201) {
+                    alert('Clip created successfully.');
+                } else {
+                    alert('Failed to create clip.');
+                }
+            } catch (error) {
+                console.error('Error:', error);
+            }
+        }
+
+        // Function to delete a clip
+        async function deleteClip() {
+            const clipId = document.getElementById("delete_clip_id").value;
+
+            try {
+                const response = await fetch(`http://127.0.0.1:8000/clip/${clipId}`, {
+                    method: 'DELETE'
+                });
+
+                if (response.status === 202) {
+                    alert('Clip deleted successfully.');
+                } else if (response.status === 404) {
+                    alert('Clip not found.');
+                } else {
+                    alert('Failed to delete clip.');
+                }
+            } catch (error) {
+                console.error('Error:', error);
+            }
+        }
+
+        async function showClip() {
+            const clipId = document.getElementById("show_clip_id").value;
+
+            try {
+                const response = await fetch(`http://127.0.0.1:8000/clip/${clipId}`, {
+                    method: 'GET'
+                });
+
+                if (response.status === 200) {
+                    const clip = await response.json();
+                    document.getElementById("display-clip").textContent = `Clip Data: ${clip.data}`;
+                } else if (response.status === 404) {
+                    document.getElementById("display-clip").textContent = 'Clip not found.';
+                } else {
+                    alert('Failed to show clip.');
+                }
+            } catch (error) {
+                console.error('Error:', error);
+            }
+        }
+
+        document.getElementById("show-clip-form").addEventListener("submit", function (e) {
+            e.preventDefault();
+            showClip();
+        });
+
+        // Add event listeners to the forms
+        document.getElementById("create-clip-form").addEventListener("submit", function (e) {
+            e.preventDefault();
+            createClip();
+        });
+
+        document.getElementById("delete-clip-form").addEventListener("submit", function (e) {
+            e.preventDefault();
+            deleteClip();
+        });
+    </script>
+</body>
+</html>
