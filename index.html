@@ -1,179 +1,312 @@
 <!DOCTYPE html>
 <html>
-<head>
-    <title>Cl1p.net Clone</title>
+  <head>
+    <title>ClipVault - Simple Clipboard Sharing</title>
     <style>
-        body {
-            font-family: Arial, sans-serif;
-            background-color: #f2f2f2;
-            margin: 0;
-            padding: 0;
-            text-align: center;
+      :root {
+        --primary: #4a90e2;
+        --secondary: #6c757d;
+        --success: #28a745;
+        --danger: #dc3545;
+        --light: #f8f9fa;
+        --dark: #343a40;
+      }
+
+      body {
+        font-family: "Segoe UI", system-ui, -apple-system, sans-serif;
+        background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
+        margin: 0;
+        min-height: 100vh;
+        color: var(--dark);
+        line-height: 1.6;
+      }
+
+      .container {
+        max-width: 1200px;
+        margin: 0 auto;
+        padding: 4rem 2rem;
+      }
+
+      h1 {
+        background: linear-gradient(45deg, var(--primary), #1e6ab6);
+        color: white;
+        padding: 2rem 1rem;
+        margin: 0 0 2rem 0;
+        font-size: 2.5rem;
+        text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.1);
+        box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+      }
+
+      .grid {
+        display: grid;
+        gap: 2rem;
+        grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+      }
+
+      .card {
+        background: white;
+        border-radius: 12px;
+        padding: 1.5rem;
+        box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05);
+        transition: transform 0.2s, box-shadow 0.2s;
+      }
+
+      .card:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 6px 12px rgba(0, 0, 0, 0.1);
+      }
+
+      .form-group {
+        margin-bottom: 1.5rem;
+        margin-right: 1.5rem;
+      }
+
+      label {
+        display: block;
+        margin-bottom: 0.5rem;
+        font-weight: 600;
+        color: var(--dark);
+      }
+
+      input,
+      textarea {
+        width: 100%;
+        padding: 0.8rem;
+        border: 2px solid #dee2e6;
+        border-radius: 8px;
+        font-size: 1rem;
+        transition: border-color 0.2s;
+      }
+
+      input:focus,
+      textarea:focus {
+        border-color: var(--primary);
+        outline: none;
+        box-shadow: 0 0 0 3px rgba(74, 144, 226, 0.25);
+      }
+
+      button {
+        padding: 0.8rem 1.5rem;
+        border: none;
+        border-radius: 8px;
+        font-weight: 600;
+        cursor: pointer;
+        transition: transform 0.2s, opacity 0.2s;
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+      }
+
+      button[type="submit"] {
+        background: var(--primary);
+        color: white;
+      }
+
+      .btn-danger {
+        background: var(--danger);
+        color: white;
+      }
+
+      .btn-success {
+        background: var(--success);
+        color: white;
+      }
+
+      #display-clip {
+        background: white;
+        padding: 1.5rem;
+        border-radius: 8px;
+        margin-top: 2rem;
+        white-space: pre-wrap;
+        word-break: break-word;
+        box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+      }
+
+      .alert {
+        padding: 1rem;
+        border-radius: 8px;
+        margin: 1rem 0;
+      }
+
+      .alert-success {
+        background: #d4edda;
+        color: #155724;
+      }
+
+      .alert-error {
+        background: #f8d7da;
+        color: #721c24;
+      }
+
+      @media (max-width: 768px) {
+        .container {
+          padding: 1rem;
         }
 
         h1 {
-            background-color: #007BFF;
-            color: #fff;
-            padding: 20px;
+          font-size: 2rem;
         }
-
-        form {
-            background-color: #fff;
-            border: 1px solid #ccc;
-            padding: 20px;
-            margin: 20px;
-            border-radius: 5px;
-        }
-
-        label {
-            display: block;
-            font-weight: bold;
-        }
-
-        input[type="text"],
-        textarea {
-            width: 100%;
-            padding: 10px;
-            margin: 8px 0;
-            box-sizing: border-box;
-            border: 1px solid #ccc;
-            border-radius: 3px;
-        }
-
-        button {
-            background-color: #007BFF;
-            color: #fff;
-            padding: 10px 20px;
-            border: none;
-            cursor: pointer;
-            border-radius: 3px;
-        }
-
-        #display-clip {
-            margin: 20px;
-            padding: 10px;
-            border: 1px solid #ccc;
-            border-radius: 5px;
-            background-color: #fff;
-        }
+      }
     </style>
-</head>
-<body>
-    <h1>Cl1p.net Clone</h1>
+  </head>
+  <body>
+    <h1 style="text-align: center">ClipVault ✂️</h1>
+    <div class="container">
+      <div class="grid">
+        <!-- Create Clip Card -->
+        <div class="card">
+          <h2>Create New Clip</h2>
+          <form id="create-clip-form">
+            <div class="form-group">
+              <label for="clip_id">Clip ID</label>
+              <input
+                type="text"
+                id="clip_id"
+                required
+                placeholder="Enter unique ID"
+              />
+            </div>
+            <div class="form-group">
+              <label for="clip_data">Content</label>
+              <textarea
+                id="clip_data"
+                rows="4"
+                required
+                placeholder="Paste your content here..."
+              ></textarea>
+            </div>
+            <button type="submit" class="btn-success">💾 Save Clip</button>
+          </form>
+        </div>
 
-    <!-- Create Clip Form -->
-    <form id="create-clip-form">
-        <label for="clip_id">Clip ID:</label>
-        <input type="text" id="clip_id" required>
-        <br>
-        <label for="clip_data">Clip Data:</label>
-        <textarea id="clip_data" required></textarea>
-        <br>
-        <button type="submit">Create Clip</button>
-    </form>
+        <!-- Manage Clips Card -->
+        <div class="card">
+          <h2>Manage Clips</h2>
+          <form id="delete-clip-form">
+            <div class="form-group">
+              <label for="delete_clip_id">Delete Clip</label>
+              <input
+                type="text"
+                id="delete_clip_id"
+                required
+                placeholder="Enter clip ID to delete"
+              />
+            </div>
+            <button type="submit" class="btn-danger">❌ Delete Clip</button>
+          </form>
 
-    <!-- Delete Clip Form -->
-    <form id="delete-clip-form">
-        <label for="delete_clip_id">Delete Clip (Enter ID):</label>
-        <input type="text" id="delete_clip_id" required>
-        <br>
-        <button type="submit">Delete Clip</button>
-    </form>
+          <hr style="margin: 1.5rem 0; border-color: #eee" />
 
-    <!-- Show Clip Form -->
-    <form id="show-clip-form">
-        <label for="show_clip_id">Show Clip (Enter ID):</label>
-        <input type="text" id="show_clip_id" required>
-        <button type="submit">Show Clip</button>
-    </form>
+          <form id="show-clip-form">
+            <div class="form-group">
+              <label for="show_clip_id">Retrieve Clip</label>
+              <input
+                type="text"
+                id="show_clip_id"
+                required
+                placeholder="Enter clip ID to view"
+              />
+            </div>
+            <button type="submit">🔍 View Clip</button>
+          </form>
+        </div>
+      </div>
 
-    <div id="display-clip">
-        <!-- Display Clip Data Here -->
+      <div id="display-clip">
+        <!-- Clip content will be displayed here -->
+      </div>
     </div>
 
-
     <script>
-        // Function to create a clip
-        async function createClip() {
-            const clipId = document.getElementById("clip_id").value;
-            const clipData = document.getElementById("clip_data").value;
+      // Function to create a clip
+      async function createClip() {
+        const clipId = document.getElementById("clip_id").value;
+        const clipData = document.getElementById("clip_data").value;
 
-            try {
-                const response = await fetch('http://127.0.0.1:8000/clip', {
-                    method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json'
-                    },
-                    body: JSON.stringify({ id: clipId, data: clipData })
-                });
+        try {
+          const response = await fetch("http://127.0.0.1:8000/clip", {
+            method: "POST",
+            headers: {
+              "Content-Type": "application/json",
+            },
+            body: JSON.stringify({ id: clipId, data: clipData }),
+          });
 
-                if (response.status === 201) {
-                    alert('Clip created successfully.');
-                } else {
-                    alert('Failed to create clip.');
-                }
-            } catch (error) {
-                console.error('Error:', error);
-            }
+          if (response.status === 201) {
+            alert("Clip created successfully.");
+          } else {
+            alert("Failed to create clip.");
+          }
+        } catch (error) {
+          console.error("Error:", error);
         }
+      }
 
-        // Function to delete a clip
-        async function deleteClip() {
-            const clipId = document.getElementById("delete_clip_id").value;
+      // Function to delete a clip
+      async function deleteClip() {
+        const clipId = document.getElementById("delete_clip_id").value;
 
-            try {
-                const response = await fetch(`http://127.0.0.1:8000/clip/${clipId}`, {
-                    method: 'DELETE'
-                });
+        try {
+          const response = await fetch(`http://127.0.0.1:8000/clip/${clipId}`, {
+            method: "DELETE",
+          });
 
-                if (response.status === 202) {
-                    alert('Clip deleted successfully.');
-                } else if (response.status === 404) {
-                    alert('Clip not found.');
-                } else {
-                    alert('Failed to delete clip.');
-                }
-            } catch (error) {
-                console.error('Error:', error);
-            }
+          if (response.status === 202) {
+            alert("Clip deleted successfully.");
+          } else if (response.status === 404) {
+            alert("Clip not found.");
+          } else {
+            alert("Failed to delete clip.");
+          }
+        } catch (error) {
+          console.error("Error:", error);
         }
+      }
 
-        async function showClip() {
-            const clipId = document.getElementById("show_clip_id").value;
+      async function showClip() {
+        const clipId = document.getElementById("show_clip_id").value;
 
-            try {
-                const response = await fetch(`http://127.0.0.1:8000/clip/${clipId}`, {
-                    method: 'GET'
-                });
+        try {
+          const response = await fetch(`http://127.0.0.1:8000/clip/${clipId}`, {
+            method: "GET",
+          });
 
-                if (response.status === 200) {
-                    const clip = await response.json();
-                    document.getElementById("display-clip").textContent = `Clip Data: ${clip.data}`;
-                } else if (response.status === 404) {
-                    document.getElementById("display-clip").textContent = 'Clip not found.';
-                } else {
-                    alert('Failed to show clip.');
-                }
-            } catch (error) {
-                console.error('Error:', error);
-            }
+          if (response.status === 200) {
+            const clip = await response.json();
+            document.getElementById(
+              "display-clip"
+            ).textContent = `Clip Data: ${clip.data}`;
+          } else if (response.status === 404) {
+            document.getElementById("display-clip").textContent =
+              "Clip not found.";
+          } else {
+            alert("Failed to show clip.");
+          }
+        } catch (error) {
+          console.error("Error:", error);
         }
+      }
 
-        document.getElementById("show-clip-form").addEventListener("submit", function (e) {
-            e.preventDefault();
-            showClip();
+      document
+        .getElementById("show-clip-form")
+        .addEventListener("submit", function (e) {
+          e.preventDefault();
+          showClip();
         });
 
-        // Add event listeners to the forms
-        document.getElementById("create-clip-form").addEventListener("submit", function (e) {
-            e.preventDefault();
-            createClip();
+      // Add event listeners to the forms
+      document
+        .getElementById("create-clip-form")
+        .addEventListener("submit", function (e) {
+          e.preventDefault();
+          createClip();
         });
 
-        document.getElementById("delete-clip-form").addEventListener("submit", function (e) {
-            e.preventDefault();
-            deleteClip();
+      document
+        .getElementById("delete-clip-form")
+        .addEventListener("submit", function (e) {
+          e.preventDefault();
+          deleteClip();
         });
     </script>
-</body>
+  </body>
 </html>
