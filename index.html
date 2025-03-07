@@ -147,6 +147,7 @@
         }
       }
     </style>
+    <meta name="api-url" content="%API_URL%" />
   </head>
   <body>
     <h1 style="text-align: center">ClipVault ✂️</h1>
@@ -217,22 +218,22 @@
     </div>
 
     <script>
+      const API_URL = document
+        .querySelector('meta[name="api-url"]')
+        .getAttribute("content");
       // Function to create a clip
       async function createClip() {
         const clipId = document.getElementById("clip_id").value;
         const clipData = document.getElementById("clip_data").value;
 
         try {
-          const response = await fetch(
-            "https://clipvault-fastapi.onrender.com/clip",
-            {
-              method: "POST",
-              headers: {
-                "Content-Type": "application/json",
-              },
-              body: JSON.stringify({ id: clipId, data: clipData }),
-            }
-          );
+          const response = await fetch(`${API_URL}/clip`, {
+            method: "POST",
+            headers: {
+              "Content-Type": "application/json",
+            },
+            body: JSON.stringify({ id: clipId, data: clipData }),
+          });
 
           if (response.status === 201) {
             alert("Clip created successfully.");
@@ -249,12 +250,9 @@
         const clipId = document.getElementById("delete_clip_id").value;
 
         try {
-          const response = await fetch(
-            `https://clipvault-fastapi.onrender.com/clip/${clipId}`,
-            {
-              method: "DELETE",
-            }
-          );
+          const response = await fetch(`${API_URL}/clip/${clipId}`, {
+            method: "DELETE",
+          });
 
           if (response.status === 202) {
             alert("Clip deleted successfully.");
@@ -272,12 +270,9 @@
         const clipId = document.getElementById("show_clip_id").value;
 
         try {
-          const response = await fetch(
-            `https://clipvault-fastapi.onrender.com/clip/${clipId}`,
-            {
-              method: "GET",
-            }
-          );
+          const response = await fetch(`${API_URL}/clip/${clipId}`, {
+            method: "GET",
+          });
 
           if (response.status === 200) {
             const clip = await response.json();
