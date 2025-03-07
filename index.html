@@ -223,7 +223,7 @@
         const clipData = document.getElementById("clip_data").value;
 
         try {
-          const response = await fetch("http://127.0.0.1:8000/clip", {
+          const response = await fetch("https://clipvault-fastapi.onrender.com/clip", {
             method: "POST",
             headers: {
               "Content-Type": "application/json",
@@ -246,7 +246,7 @@
         const clipId = document.getElementById("delete_clip_id").value;
 
         try {
-          const response = await fetch(`http://127.0.0.1:8000/clip/${clipId}`, {
+          const response = await fetch(`https://clipvault-fastapi.onrender.com/clip/${clipId}`, {
             method: "DELETE",
           });
 
@@ -266,7 +266,7 @@
         const clipId = document.getElementById("show_clip_id").value;
 
         try {
-          const response = await fetch(`http://127.0.0.1:8000/clip/${clipId}`, {
+          const response = await fetch(`https://clipvault-fastapi.onrender.com/clip/${clipId}`, {
             method: "GET",
           });
 
