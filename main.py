@@ -43,23 +43,32 @@ db_dependency = Annotated[Session, Depends(get_db)]
 
 
 # Read Clip
+
+
 @app.get("/clip", status_code=status.HTTP_200_OK)
-async def get_all(db: db_dependency):
-    clip = db.query(model.Clip).all()
+async def get_all(request: Request, db: db_dependency):
+    client_ip = request.client.host
+    print(f"Request from IP: {client_ip}")
+    clips = db.query(model.Clip).all()
+    return clips
 
 
 @app.delete("/delete", status_code=status.HTTP_202_ACCEPTED)
-async def delete_all(db: db_dependency):
+async def delete_all(request: Request, db: db_dependency):
+    client_ip = request.client.host
+    print(f"Request from IP: {client_ip}")
     clip = db.query(model.Clip).all()
     for i in clip:
         db.delete(i)
     db.commit()
+    return {"message": "All Clips deleted"}
 
 
 @app.get("/clip/{clip_id}", status_code=status.HTTP_200_OK)
-async def get_clip(clip_id: str, db: db_dependency):
+async def get_clip(clip_id: str, request: Request, db: db_dependency):
+    client_ip = request.client.host
+    print(f"Request from IP: {client_ip}")
     clip = db.query(model.Clip).filter(model.Clip.id == clip_id).first()
-
     if clip is None:
         raise HTTPException(status_code=404, details='Clip not Found')
     return clip
@@ -68,15 +77,20 @@ async def get_clip(clip_id: str, db: db_dependency):
 
 
 @app.post("/clip", status_code=status.HTTP_201_CREATED)
-async def create_clip(clip: ClipBase, db: db_dependency):
-    db_clip = model.Clip(**clip.dict())
+async def create_clip(clip: ClipBase, request: Request, db: db_dependency):
+    client_ip = request.client.host
+    print(f"Request from IP: {client_ip}")
+    db_clip = model.Clip(**clip.dict(), ip=client_ip)
     db.add(db_clip)
     db.commit()
+    return {"message": "Clip created"}
 
 
 # Delete Clip
 @app.delete("/clip/{clip_id}", status_code=status.HTTP_202_ACCEPTED)
-async def delete_clip(clip_id: str, db: db_dependency):
+async def delete_clip(clip_id: str, request: Request, db: db_dependency):
+    client_ip = request.client.host
+    print(f"Request from IP: {client_ip}")
     clip = db.query(model.Clip).filter(model.Clip.id == clip_id).first()
 
     if clip is None:
@@ -84,3 +98,4 @@ async def delete_clip(clip_id: str, db: db_dependency):
 
     db.delete(clip)
     db.commit()
+    return {"message": "Clip deleted"}

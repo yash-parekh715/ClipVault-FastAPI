@@ -9,3 +9,4 @@ class Clip(Base):
 
     id = Column(String(20), primary_key=True, index=True)
     data = Column(String(1000))
+    ip = Column(String(12))
