@@ -10,4 +10,5 @@ ping_interval=50
 while true; do
     ping "$target_url"
     sleep "$ping_interval"
+    echo "happening"
 done
